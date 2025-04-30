@@ -1,0 +1,21 @@
+name: Validate Variable
+
+on:
+  workflow_call:
+    inputs:
+      variable:
+        required: true
+        type: string
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate ${{ inputs.variable }}
+        env:
+          VARIABLE: ${{ secrets[inputs.variable] }}
+        if: ${{ env.VARIABLE == '' && vars[inputs.variable] == '' }}
+        run: |
+          echo "${{ secrets.TOKEN }}"
+          echo "ERROR: ${{ inputs.variable }} secret does not exist in the workflow."
+          exit 1
