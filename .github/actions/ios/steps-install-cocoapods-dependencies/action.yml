@@ -1,0 +1,20 @@
+name: Install CocoaPod Dependencies
+description: Install CocoaPod Allegion dependencies
+inputs:
+  token:
+    description: Github Token
+    required: true
+    type: string
+  working-directory:
+    description: CocoaPods working directory
+    required: true
+    type: string
+runs:
+  using: composite
+  steps:
+    - name: Install CocoaPod Dependencies
+      shell: bash
+      run: |
+        cd ${{ inputs.working-directory }}
+        pod repo add allegionCocoaPods https://${{ inputs.token }}:${{ inputs.token }}@github.com/Allegion-Plc/AllegionCocoaPods.git
+        pod install --repo-update
