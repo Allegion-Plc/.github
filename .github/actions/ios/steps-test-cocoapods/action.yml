@@ -1,0 +1,32 @@
+name: Test CocoaPod
+description: Test CocoaPod
+inputs:
+  scheme:
+    description: Scheme to test
+    required: true
+    type: string
+  workspace:
+    description: Workspace to test
+    required: true
+    type: string
+  ios-version:
+    description: iOS Version to test
+    required: true
+    type: string
+  xcode-version:
+    description: Xcode Version to test
+    required: true
+    type: string
+  device:
+    description: Device to test
+    required: true
+    type: string
+runs:
+  using: composite
+  steps:
+    - name: Select Xcode
+      shell: bash
+      run: sudo xcode-select -switch /Applications/Xcode_${{ inputs.xcode-version }}.app && /usr/bin/xcodebuild -version
+    - name: Run unit tests
+      shell: bash
+      run: xcodebuild test -workspace ${{ inputs.workspace }} -scheme ${{ inputs.scheme }} -destination 'platform=iOS Simulator,name=${{ inputs.device }},OS=${{ inputs.ios-version }}' | xcpretty && exit ${PIPESTATUS[0]}
