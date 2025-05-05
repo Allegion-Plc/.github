@@ -1,0 +1,31 @@
+name: Sonar Analysis
+
+on:
+  workflow_call:
+
+jobs:
+  sonarqube:
+    runs-on: ${{ vars.IOS_VM_IMAGE }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        # Disabling shallow clones is recommended for improving the relevancy of reporting
+        fetch-depth: 0
+    - name: SonarQube Scan
+      uses: SonarSource/sonarqube-scan-action@v5.1.0
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+      with:
+        projectBaseDir: .
+        args: >
+          -Dsonar.verbose=false
+          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+          -Dsonar.projectName=${{ vars.SONAR_PROJECT_NAME }}
+          -Dsonar.projectDescription="${{ vars.SONAR_PROJECT_DESCRIPTION }}"
+          -Dsonar.sources=${{ vars.SONAR_SOURCE_DIRECTORY }}
+          -Dsonar.tests=${{ vars.SONAR_TESTS_DIRECTORY }}
+          -Dsonar.swift.workspace=${{ vars.WORKING_DIRECTORY }}/${{ vars.WORKSPACE }}
+          -Dsonar.sourceEncoding=UTF-8
+          -Dsonar.qualitygate.wait=true
