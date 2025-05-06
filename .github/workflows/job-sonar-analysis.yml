@@ -5,6 +5,7 @@ on:
 
 jobs:
   sonarqube:
+    name: Sonar Analysis
     runs-on: ${{ vars.IOS_VM_IMAGE }}
     steps:
     - name: Checkout

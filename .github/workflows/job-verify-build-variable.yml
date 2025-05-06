@@ -1,21 +1,25 @@
-name: Validate Variable
+name: Validate Variables
 
 on:
   workflow_call:
     inputs:
-      variable:
+      variables:
         required: true
         type: string
 
 jobs:
   validate:
+    name: Validate Variables
+    if: ${{ inputs.variables != '' }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        variable: ${{ fromJson(inputs.variables) }}
     steps:
-      - name: Validate ${{ inputs.variable }}
+      - name: Validate ${{ matrix.variable }}
         env:
-          VARIABLE: ${{ secrets[inputs.variable] }}
-        if: ${{ env.VARIABLE == '' && vars[inputs.variable] == '' }}
+          VARIABLE: ${{ secrets[matrix.variable] }}
+        if: ${{ env.VARIABLE == '' && vars[matrix.variable] == '' }}
         run: |
-          echo "${{ secrets.TOKEN }}"
-          echo "ERROR: ${{ inputs.variable }} secret does not exist in the workflow."
+          echo "ERROR: ${{ matrix.variable }} secret does not exist in the workflow."
           exit 1
