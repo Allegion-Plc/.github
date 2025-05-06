@@ -1,0 +1,33 @@
+name: Black Duck Analysis
+
+on:
+  workflow_call:
+
+jobs:
+  sonarqube:
+    name: Black Duck Analysis
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Black Duck Security Scan
+      uses: blackduck-inc/black-duck-security-scan@v2.1.1
+      env:
+        DETECT_PROJECT_NAME: ${{ vars.BLACKDUCK_PROJECT_NAME }}
+      with:
+        blackducksca_url: https://allegion.blackducksoftware.com
+        blackducksca_token: ${{ secrets.BLACKDUCK_TOKEN }}
+        blackducksca_scan_full: true
+        blackducksca_scan_failure_severities: 'BLOCKER,CRITICAL'
+        blackducksca_fixpr_enabled: true
+        blackducksca_prcomment_enabled: true
+        github_token: ${{ secrets.TOKEN }}
+        detect_search_depth: 1
+        detect_args: >
+          --blackduck.trust.cert=true
+          --logging.level.detect=${{ vars.BLACKDUCK_LOGGING_LEVEL }}
+          --detect.project.version.name=${{ vars.BLACKDUCK_PROJECT_VERSION_NAME }}
+          --detect.included.detector.types=${{ vars.BLACKDUCK_DETECTORS }}
+          --detect.required.detector.types=${{ vars.BLACKDUCK_DETECTORS }}
+          --detect.excluded.directories=/.bridge/,${{ vars.BLACKDUCK_EXCLUSIONS }}
+          --detect.project.user.groups=NA-SW-Admins,NA-SW-Developers
